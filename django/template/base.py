@@ -405,6 +405,9 @@ class DebugLexer(Lexer):
 
 class Parser:
     def __init__(self, tokens, libraries=None, builtins=None, origin=None):
+        # We reverse the tokens so `next_token`, `prepend_token`, and
+        # `delete_first_token` can all operate at the end of the list, which
+        # is O(1).
         self.tokens = list(reversed(tokens))
         self.tags = {}
         self.filters = {}
