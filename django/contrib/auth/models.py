@@ -141,14 +141,16 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
+    def create_user(self, username, email=None, password=None, staff_level=-1, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('user_level', user_level)
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('user_level', 0)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -340,6 +342,12 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'),
     )
+    # TODO: our work
+    user_level = models.IntegerField(
+        _('active'),
+        default=-1,
+        help_text=_('??????????'),  #TODO
+    )
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -399,6 +407,7 @@ class AnonymousUser:
     is_staff = False
     is_active = False
     is_superuser = False
+    user_level = -1
     _groups = EmptyManager(Group)
     _user_permissions = EmptyManager(Permission)
 
