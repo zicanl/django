@@ -75,6 +75,7 @@ class Permission(models.Model):
 
     def natural_key(self):
         return (self.codename,) + self.content_type.natural_key()
+
     natural_key.dependencies = ['contenttypes.contenttype']
 
 
@@ -396,6 +397,7 @@ class User(AbstractUser):
 
     Username and password are required. Other fields are optional.
     """
+
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
 
@@ -471,3 +473,24 @@ class AnonymousUser:
 
     def get_username(self):
         return self.username
+
+import django.conf.global_settings as global_settings
+class StaffLevel:
+    def __init__(self):
+        if global_settings.STAFF_LEVEL:
+            if not isinstance(global_settings.STAFF_LEVEL, list):
+                raise RuntimeError("global_settings.STAFF_LEVEL variable must be a list type")
+            for name, value in global_settings.STAFF_LEVEL:
+                if not isinstance(name, str):
+                    raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
+                if not isinstance(value, int):
+                    raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
+                line = "self." + name + "=" + str(value)
+                exec(line)
+        else:
+            # default STAFF LEVEL
+            self.USER = -1
+            self.SUPERUSER = 0
+            self.STAFF = 100
+
+

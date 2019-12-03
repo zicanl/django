@@ -15,7 +15,7 @@ try:
 except ImportError as e:
     raise RuntimeError(
         'Django module not found, reference tests/README.rst for instructions.'
-    ) from e
+    )
 else:
     from django.apps import apps
     from django.conf import settings
