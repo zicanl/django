@@ -480,7 +480,9 @@ class StaffLevel:
         if global_settings.STAFF_LEVEL:
             if not isinstance(global_settings.STAFF_LEVEL, list):
                 raise RuntimeError("global_settings.STAFF_LEVEL variable must be a list type")
-            for name, value in global_settings.STAFF_LEVEL:
+            for obj in global_settings.STAFF_LEVEL:
+                name = obj["role"]
+                value = obj["level"]
                 if not isinstance(name, str):
                     raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
                 if not isinstance(value, int):

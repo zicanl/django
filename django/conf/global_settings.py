@@ -639,4 +639,8 @@ SECURE_SSL_HOST = None
 SECURE_SSL_REDIRECT = False
 
 # staff level
-STAFF_LEVEL = [("USER", -1), ("SUPERUSER", 0), ("STAFF", 100)]
+STAFF_LEVEL = [
+    {"role": "USER", "level": -1},
+    {"role": "SUPERUSER", "level": 0},
+    {"role": "STAFF", "level": 100}
+]
