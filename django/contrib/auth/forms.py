@@ -153,6 +153,14 @@ class UserChangeForm(forms.ModelForm):
         if user_permissions:
             user_permissions.queryset = user_permissions.queryset.select_related('content_type')
 
+    def clean(self):
+        new_user_level = self.cleaned_data.get('user_level')
+        current_user_level = self.current_user_level
+        # print("###",user_level)
+        # print("###",current_user_level)
+        if current_user_level > new_user_level:
+            raise forms.ValidationError("??!!")  # TODO:
+
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the

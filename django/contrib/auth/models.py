@@ -343,12 +343,6 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'),
     )
-    # TODO: our work
-    user_level = models.IntegerField(
-        _('active'),
-        default=-1,
-        help_text=_('??????????'),  #TODO
-    )
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -436,6 +430,9 @@ class AnonymousUser:
 
     def check_password(self, raw_password):
         raise NotImplementedError("Django doesn't provide a DB representation for AnonymousUser.")
+
+    def check_user_level(self, level):
+        return level == -1
 
     @property
     def groups(self):

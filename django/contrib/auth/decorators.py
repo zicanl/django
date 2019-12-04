@@ -75,8 +75,7 @@ def user_level_required(required_level, redirect_field_name=REDIRECT_FIELD_NAME,
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            if (request.user.user_level <= required_level and request.user.user_level>= 0)\
-             or required_level == -1:
+            if request.user.check_user_level(required_level):
                 return view_func(request, *args, **kwargs)
 
             if not request.user.is_authenticated:

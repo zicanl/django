@@ -46,6 +46,12 @@ class BaseUserManager(models.Manager):
 
 class AbstractBaseUser(models.Model):
     password = models.CharField(_('password'), max_length=128)
+    # TODO:
+    user_level = models.IntegerField(
+        _('user level'),
+        default=-1,
+        help_text=_('Assigns user to a specific permission level group'),
+    )
     last_login = models.DateTimeField(_('last login'), blank=True, null=True)
 
     is_active = True
@@ -109,6 +115,16 @@ class AbstractBaseUser(models.Model):
             self._password = None
             self.save(update_fields=["password"])
         return check_password(raw_password, self.password, setter)
+
+    def set_user_level(self, level):
+        self.user_level = level
+
+    def check_user_level(self, level):
+        """
+        ???
+        """
+        return (self.user_level <= level and self.user_level>= 0)\
+         or level == -1
 
     def set_unusable_password(self):
         # Set a value that will never be a valid hash
