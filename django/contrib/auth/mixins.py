@@ -52,6 +52,18 @@ class LoginRequiredMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class UserLevelRequiredMixin(AccessMixin):
+    required_user_level = None
+    # TODO
+    """???"""
+    def dispatch(self, request, *args, **kwargs):
+        if self.required_user_level is None:
+            raise NotImplementedError("class need to implement ....")  # TODO
+        if not request.user.check_user_level(self.required_user_level):
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
+
+
 class PermissionRequiredMixin(AccessMixin):
     """Verify that the current user has all specified permissions."""
     permission_required = None
