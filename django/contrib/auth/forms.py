@@ -156,7 +156,9 @@ class UserChangeForm(forms.ModelForm):
     def clean(self):
         new_user_level = self.cleaned_data.get('user_level')
         current_user_level = self.current_user_level
-        if current_user_level > new_user_level:
+        if current_user_level == -1 and new_user_level != -1:
+            raise forms.ValidationError("??!!")  # TODO:
+        if current_user_level > new_user_level != -1:
             raise forms.ValidationError("??!!")  # TODO:
 
     def clean_password(self):

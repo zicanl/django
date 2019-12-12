@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError
 
 
 def update_last_login(sender, user, **kwargs):
@@ -145,7 +146,7 @@ class UserManager(BaseUserManager):
     def create_user(self, username, email=None, password=None, staff_level=-1, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        extra_fields.setdefault('user_level', user_level)
+        # extra_fields.setdefault('user_level', user_level)
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -471,25 +472,39 @@ class AnonymousUser:
     def get_username(self):
         return self.username
 
-import django.conf.global_settings as global_settings
-class StaffLevel:
-    def __init__(self):
-        if global_settings.STAFF_LEVEL:
-            if not isinstance(global_settings.STAFF_LEVEL, list):
-                raise RuntimeError("global_settings.STAFF_LEVEL variable must be a list type")
-            for obj in global_settings.STAFF_LEVEL:
-                name = obj["role"]
-                value = obj["level"]
-                if not isinstance(name, str):
-                    raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
-                if not isinstance(value, int):
-                    raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
-                line = "self." + name + "=" + str(value)
-                exec(line)
-        else:
-            # default STAFF LEVEL
-            self.USER = -1
-            self.SUPERUSER = 0
-            self.STAFF = 100
+
+def userLevelValidator(levelInt):
+    if levelInt <= 0 and not isinstance(levelInt, int):
+        # TODO: levelInt can not be less equal than zero and it must be Integer Type
+        raise ValidationError (
+            _('%(value)s is not an even number'),
+            params={'value': levelInt},
+        )
+
+class StaffLevel(models.Model):
+
+    levelName = models.CharField(max_length=60)
+    levelInt = models.IntegerField(default=-1, primary_key=True, validators=[userLevelValidator])
+
+
+
+    # def __init__(self, name, levelInt):
+    #     if global_settings.STAFF_LEVEL:
+    #         if not isinstance(global_settings.STAFF_LEVEL, list):
+    #             raise RuntimeError("global_settings.STAFF_LEVEL variable must be a list type")
+    #         for obj in global_settings.STAFF_LEVEL:
+    #             name = obj["role"]
+    #             value = obj["level"]
+    #             if not isinstance(name, str):
+    #                 raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
+    #             if not isinstance(value, int):
+    #                 raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
+    #             line = "self." + name + "=" + str(value)
+    #             exec(line)
+    #     else:
+    #         # default STAFF LEVEL
+    #         self.USER = -1
+    #         self.SUPERUSER = 0
+    #         self.STAFF = 100
 
 
