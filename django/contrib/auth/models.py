@@ -12,6 +12,23 @@ from .validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 
 
+def userLevelValidator(levelInt):
+    if levelInt <= 0 and not isinstance(levelInt, int):
+        # TODO: levelInt can not be less equal than zero and it must be Integer Type
+        raise ValidationError (
+            _('%(value)s is not an even number'),
+            params={'value': levelInt},
+        )
+
+
+class StaffLevel(models.Model):
+    levelName = models.TextField(max_length=60)
+    levelInt = models.IntegerField(default=-1, primary_key=True, validators=[userLevelValidator])
+
+    def __str__(self):
+        return StaffLevel.levelName
+
+
 def update_last_login(sender, user, **kwargs):
     """
     A signal receiver which updates the last_login date for
@@ -130,7 +147,7 @@ class Group(models.Model):
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, email, password, user_level, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -140,19 +157,20 @@ class UserManager(BaseUserManager):
         username = self.model.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
+        user.set_user_level(StaffLevel.objects.get(levelName=user_level))
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, staff_level=-1, **extra_fields):
+    def create_user(self, username, email=None, password=None, user_level="user", **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        # extra_fields.setdefault('user_level', user_level)
+        extra_fields.setdefault('user_level', user_level)
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('user_level', 0)
+        extra_fields.setdefault('user_level', "superuser")
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -352,6 +370,13 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
+    # TODO:
+    user_level = models.ForeignKey(
+        "StaffLevel",
+        on_delete=models.PROTECT,
+        default=-1,
+        help_text=_('Assigns user to a specific permission level group'),
+    )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = UserManager()
@@ -368,6 +393,9 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     def clean(self):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
+
+    def set_user_level(self, level):
+        self.user_level = level
 
     def get_full_name(self):
         """
@@ -471,20 +499,3 @@ class AnonymousUser:
 
     def get_username(self):
         return self.username
-
-
-def userLevelValidator(levelInt):
-    if levelInt <= 0 and not isinstance(levelInt, int):
-        # TODO: levelInt can not be less equal than zero and it must be Integer Type
-        raise ValidationError (
-            _('%(value)s is not an even number'),
-            params={'value': levelInt},
-        )
-
-class StaffLevel(models.Model):
-
-    levelName = models.CharField(max_length=60)
-    levelInt = models.IntegerField(default=-1, primary_key=True, validators=[userLevelValidator])
-
-
-
