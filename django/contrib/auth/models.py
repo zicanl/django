@@ -26,8 +26,7 @@ class StaffLevel(models.Model):
     levelInt = models.IntegerField(default=-1, primary_key=True, validators=[userLevelValidator])
 
     def __str__(self):
-        return StaffLevel.levelName
-
+        return self.levelName
 
 def update_last_login(sender, user, **kwargs):
     """

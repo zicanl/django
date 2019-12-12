@@ -17,10 +17,19 @@ from django.utils.html import escape
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.contrib.auth.models import StaffLevel
 
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
+@admin.register(StaffLevel)
+class StaffLevelAdmin(admin.ModelAdmin):
+    search_fields = ('levelName',)
+    ordering = ('levelName',)
+    # filter_horizontal = ('levelName',)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        return super(StaffLevelAdmin, self).formfield_for_foreignkey(db_field, request=request, **kwargs)
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
@@ -78,7 +87,7 @@ class UserAdmin(admin.ModelAdmin):
             defaults['form'] = self.add_form
         defaults.update(kwargs)
         form = super().get_form(request, obj, **defaults)
-        form.current_user_level = request.user.user_level
+        form.current_user_level = request.user.user_level.levelInt
         return form
 
     def get_urls(self):

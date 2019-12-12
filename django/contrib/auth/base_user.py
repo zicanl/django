@@ -13,6 +13,7 @@ from django.utils.crypto import get_random_string, salted_hmac
 from django.utils.translation import gettext_lazy as _
 
 
+
 class BaseUserManager(models.Manager):
 
     @classmethod
@@ -114,8 +115,13 @@ class AbstractBaseUser(models.Model):
         """
         ???
         """
-        return (self.user_level <= level and self.user_level>= 0)\
-         or level == -1
+        from django.contrib.auth.models import StaffLevel
+
+        staffLevel = StaffLevel.objects.get(levelName=level)
+        if not staffLevel:
+            # TODO
+            raise ValueError("")
+        return (staffLevel.levelInt >= self.user_level.levelInt >= 0) or staffLevel.levelInt == -1
 
     def set_unusable_password(self):
         # Set a value that will never be a valid hash

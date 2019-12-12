@@ -154,7 +154,7 @@ class UserChangeForm(forms.ModelForm):
             user_permissions.queryset = user_permissions.queryset.select_related('content_type')
 
     def clean(self):
-        new_user_level = self.cleaned_data.get('user_level')
+        new_user_level = self.cleaned_data.get('user_level').levelInt
         current_user_level = self.current_user_level
         if current_user_level == -1 and new_user_level != -1:
             raise forms.ValidationError("??!!")  # TODO:
