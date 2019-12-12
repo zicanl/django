@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import (
 from django.db import models
 from django.utils.crypto import get_random_string, salted_hmac
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import StaffLevel
 
 
 class BaseUserManager(models.Manager):
@@ -47,8 +48,9 @@ class BaseUserManager(models.Manager):
 class AbstractBaseUser(models.Model):
     password = models.CharField(_('password'), max_length=128)
     # TODO:
-    user_level = models.IntegerField(
-        _('user level'),
+    user_level = models.OneToOneField(
+        StaffLevel,
+        on_delete=models.PROTECT,
         default=-1,
         help_text=_('Assigns user to a specific permission level group'),
     )

@@ -488,23 +488,3 @@ class StaffLevel(models.Model):
 
 
 
-    # def __init__(self, name, levelInt):
-    #     if global_settings.STAFF_LEVEL:
-    #         if not isinstance(global_settings.STAFF_LEVEL, list):
-    #             raise RuntimeError("global_settings.STAFF_LEVEL variable must be a list type")
-    #         for obj in global_settings.STAFF_LEVEL:
-    #             name = obj["role"]
-    #             value = obj["level"]
-    #             if not isinstance(name, str):
-    #                 raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
-    #             if not isinstance(value, int):
-    #                 raise RuntimeError("variable in global_settings.STAFF_LEVEL must be (str, int)")
-    #             line = "self." + name + "=" + str(value)
-    #             exec(line)
-    #     else:
-    #         # default STAFF LEVEL
-    #         self.USER = -1
-    #         self.SUPERUSER = 0
-    #         self.STAFF = 100
-
-
