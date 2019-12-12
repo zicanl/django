@@ -637,10 +637,3 @@ SECURE_REDIRECT_EXEMPT = []
 SECURE_REFERRER_POLICY = None
 SECURE_SSL_HOST = None
 SECURE_SSL_REDIRECT = False
-
-# staff level
-STAFF_LEVEL = [
-    {"role": "USER", "level": -1},
-    {"role": "SUPERUSER", "level": 0},
-    {"role": "STAFF", "level": 100}
-]
