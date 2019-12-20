@@ -153,6 +153,14 @@ class UserChangeForm(forms.ModelForm):
         if user_permissions:
             user_permissions.queryset = user_permissions.queryset.select_related('content_type')
 
+    def clean(self):
+        new_user_level = self.cleaned_data.get('user_level').levelInt
+        current_user_level = self.current_user_level
+        if current_user_level == -1 and new_user_level != -1:
+            raise forms.ValidationError("User is not arthorized for promotion.")
+        if current_user_level > new_user_level != -1:
+            raise forms.ValidationError("Not authorized to make such promotion.")
+
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
